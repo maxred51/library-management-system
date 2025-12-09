@@ -36,4 +36,16 @@ public class BookService {
     public List<Book> getAvailableBooks() {
         return bookRepository.findByAvailable(true);
     }
+
+    public Book borrowBook(Long userId, Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found"));
+
+        if (!book.isAvailable()) {
+            throw new IllegalStateException("Book already borrowed");
+        }
+
+        book.setAvailable(false);
+        return bookRepository.save(book);
+    }
 }

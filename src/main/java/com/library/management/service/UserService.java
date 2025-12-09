@@ -36,4 +36,25 @@ public class UserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
+    private void validateNewPassword(String password) {
+        if (password == null || password.length() < 6) {
+            throw new IllegalStateException("New password too short");
+        }
+    }
+
+    public User changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!user.getPassword().equals(oldPassword)) {
+            throw new IllegalArgumentException("Old password incorrect");
+        }
+
+        validateNewPassword(newPassword);
+
+        user.setPassword(newPassword);
+        return userRepository.save(user);
+    }
+
 }
